@@ -1,115 +1,69 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <ApplicationManifest xmlns="http://schemas.google.com/ApplicationManifest/2009">
-
-  <!-- Support info to show in the marketplace & control panel -->
-  <Support>
-    <!-- URL for application setup as an optional redirect during the install -->
-    <!--<Link rel="setup" href="http://office.docuvantage.com:8081/GmailAddon/?from=google&domain;=${DOMAIN_NAME}" />-->
-
-    <!-- URL for application configuration, accessed from the app settings
-     page in the control panel -->
-    <!--<Link rel="manage" href="http://office.docuvantage.com:8081/GmailAddon/?from=google&domain=${DOMAIN_NAME}" />-->
-
-    <!-- URL explaining how customers get support. -->
-    <!--<Link rel="support" href="http://_example.com_/google/support.php" />-->
-
-    <!-- URL that is displayed to admins during the deletion process,
-     to specify policies such as data retention, how to claim accounts, etc. -->
-    <!--<Link rel="deletion-policy" href="http://_example.com_/google/deletion-policy.php" />-->
-  </Support>
-
-  <!-- Name and description pulled from message bundles -->
-  <Name>DVODAddon</Name>
-  <Description>DVOD Test</Description>
-
-  <!-- Show this link in Google's universal navigation for all users -->
-  <Extension id="navLink" type="link">
-    <Name>DVODAddon</Name>
-    <Url>http://office.docuvantage.com:8081/GmailAddon/</Url>
-  </Extension>
-
-  <!-- Declare our OpenID realm so our app is white listed -->
-  <Extension id="realm" type="openIdRealm">
-    <Url>http://docuvantage.com_</Url>
-  </Extension>
-
-<!-- EXTRACTOR -->
-
-<Extension id="MessageIDExtractor" type="contextExtractor">
-    <Name>Message ID Extractor</Name>
-    <Url>google.com:MessageIDExtractor</Url>
-    <Param name="message_id" value=".*"/>
-    <Triggers ref="DVODGadget"/>
-    <Scope ref="emailMessage_ID"/>
-    <Container name="mail"/>
-</Extension>
  
-<Extension id="RecipientEmailExtractor" type="contextExtractor">
-  <Name>Recipient email extractor</Name>
-  <Url>google.com:RecipientEmailExtractor</Url>
-  <Param name="recipient_email" value=".*"/>
+  <Name>DVOD In Gmail</Name>
+ 
+  <Description>
+   DVOD in Gmail.    
+  </Description>
+  
+ <!--EXTRACTORS-->
+  
+  <Extension id="from" type="contextExtractor">
+  <Name>Email Sender</Name>
+  <Url>google.com:SenderEmailExtractor</Url>
+  <Param name="sender_email" value=".*"/>
   <Triggers ref="DVODGadget"/>
-  <Scope ref="emailtoAddress"/>
-  <Scope ref="emailCC"/>
+  <Scope ref="senderScope"/>
   <Container name="mail"/>
 </Extension>
- 
-<Extension id="SenderEmailExtractor" type="contextExtractor">
-    <Name>Sender Email Extractor</Name>
-    <Url>google.com:SenderEmailExtractor</Url>
-    <Param name="sender_email" value=".*"/>
-    <Triggers ref="DVODGadget" />
-    <Scope ref="emailSender"/>
-    <Container name="mail"/>
-</Extension>
- 
-<Extension id="RawSubjectExtractor" type="contextExtractor">
-    <Name>Raw Subject Extractor</Name>
-    <Url>google.com:RawSubjectExtractor</Url>
-    <Param name="subject" value=".*"/>
-    <Triggers ref="DVODGadget" />
-    <Scope ref="rawemailSubject"/>
-    <Container name="mail"/>
-</Extension>
 
 
-<!-- GADGET -->
-<Extension id="DVODGadget" type="gadget">
-  <Name>DVOD Gmail contextual gadget</Name>
-  <Url>http://office.docuvantage.com:8081/GmailAddon/web/DVODGadget.xml_</Url>
+  <Extension id="to" type="contextExtractor">
+  <Name>Email Reciepient</Name>
+  <Url>google.com:RecipientToEmailExtractor</Url>
+  <Param name="to_email" value=".*"/>
+  <Triggers ref="DVODGadget"/>
+  <Scope ref="toScope"/>
   <Container name="mail"/>
-  <!-- Uncomment this to enable Caja. -->
-  <!-- <Param name="caja" value="enabled"/> -->
 </Extension>
 
-<!-- SCOPE -->
+ <Extension id="ID" type="contextExtractor">
+  <Name>Email Sender</Name>
+  <Url>google.com:MessageIDExtractor</Url>
+  <Param name="id" value=".*"/>
+  <Triggers ref="DVODGadget"/>
+  <Scope ref="idScope"/>
+  <Container name="mail"/>
+</Extension>
 
-<Scope id="emailMessage_ID">
-   <Url>
-    tag:google.com,2010:auth/contextual/extractor/MESSAGE_ID</Url>
-   <Reason>This application searches for the Message ID field of an email.</Reason>
-</Scope>
-<Scope id="emailtoAddress">
+<!--GADGET-->
+ 
+  <Extension id="DVODGadget" type="gadget">
+    <Name>DVOD Gmail contextual gadget</Name>
+    <Url>http://office.docuvantage.com:8081/GmailAddon/DVODGadget.xml</Url>
+    <Container name="mail"/>
+  </Extension>
+ 
+ 
+ <!--SCOPEs-->
+  <Scope id="senderScope">
+    <Url>tag:google.com,2010:auth/contextual/extractor/FROM_ADDRESS</Url> 
+    <Reason>
+      This application starts DVOD from Email.
+    </Reason>
+  </Scope>
+  <Scope id="toScope">
     <Url>tag:google.com,2010:auth/contextual/extractor/TO_ADDRESS</Url>
-  <Reason>This application searches for the To field of an email</Reason>
-</Scope>
-<Scope id="emailCC">
-    <Url>tag:google.com,2010:auth/contextual/extractor/CC_EMAIL</Url>
-  <Reason>This application searches for the CC field of an email</Reason>
-</Scope>
-<Scope id="emailSender">
-    <Url>tag:google.com,2010:auth/contextual/extractor/FROM_ADDRESS</Url>
-   <Reason>This application searches for the From field of an email.</Reason>
-</Scope>
-<Scope id="rawemailSubject">
-    <Url>tag:google.com,2010:auth/contextual/extractor/RAW_SUBJECT</Url>
-   <Reason>This application searches for the Subject field of an email.</Reason>
-</Scope>
+    <Reason>
+      This application starts DVOD from Email.
+    </Reason>
+  </Scope>
+  <Scope id="idScope">
+    <Url>tag:google.com,2010:auth/contextual/extractor/MESSAGE_ID</Url>
+    <Reason>
+      This application starts DVOD from Email.
+    </Reason>
+  </Scope>
+ 
 </ApplicationManifest>
